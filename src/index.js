@@ -12,7 +12,7 @@ const {
 } = JSON.parse(fs.readFileSync(path.resolve(process.argv[2])));
 const muc = `conference.${domain}`;
 const focus = `focus.${domain}`;
-const roomPrefix = 'jxs-test-' + Date.now() + randomInt(0, 10000);
+const roomPrefix = "bob";//'jxs-test-' + Date.now() + randomInt(0, 10000);
 const numberOfRooms = Number(process.argv[3]);
 const numberOfParticipants = Number(process.argv[4]);
 const delay = Number(process.argv[5]) || 0;
@@ -27,7 +27,7 @@ if (!numberOfParticipants || isNaN(numberOfParticipants)) {
 const participants = {};
 
 for (let j = 0; j < numberOfRooms; j++) {
-    const roomName = `${roomPrefix}-${j}`;
+    const roomName = `${roomPrefix}${j}`;
     participants[roomName] = [];
     for (let i = 0; i < numberOfParticipants; i++) {
         const participant = new Participant({
@@ -55,4 +55,3 @@ function cleanup() {
 
 process.on('SIGTERM', cleanup);
 process.on('SIGINT', cleanup);
-

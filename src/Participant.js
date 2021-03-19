@@ -2,7 +2,9 @@
 import EventEmitter from 'events';
 import { client, xml } from '@xmpp/client';
 import debug from '@xmpp/debug';
-import { generateSsrc } from './util'
+import SDP from './SDP';
+import SDPUtil from './SDPUtil';
+import {generateSsrc} from './util';
 
 let id = 1;
 
@@ -17,9 +19,9 @@ export default class Participant extends EventEmitter {
             domain
         });
 
-        if (enableDebug) {
-            debug(this._xmpp, true);
-        }
+        //if (enableDebug) {
+        debug(this._xmpp, true);
+      //  }
 
         this._onError = this._onError.bind(this);
         this._onOffline = this._onOffline.bind(this);
