@@ -2,6 +2,8 @@
 
 import SDPUtil from './SDPUtil';
 
+
+
 /**
  *
  * @param sdp
@@ -465,10 +467,27 @@ SDP.prototype.rtcpFbFromJingle = function(elem, payloadtype) { // XEP-0293
     return sdp;
 };
 
+
+const { JSDOM } = require( 'jsdom' );
+let $ ;
+
 // construct an SDP from a jingle stanza
-SDP.prototype.fromJingle = function(jingle) {
+SDP.prototype.fromJingle = function(jingleStr) {
     const sessionId = Date.now();
 
+    const jsdom = new JSDOM( jingleStr );
+    const { window } = jsdom;
+    const { document } = window;
+    // Also set global window and document before requiring jQuery
+    global.window = window;
+    global.document = document;
+
+    $ = global.jQuery = require( 'jquery' );
+
+
+    let jingle = jingleStr;
+    console.log("BLA  BLA BLA :::: "+jingle);
+    //const $ = cheerio.load(jingleStr);
     // Use a unique session id for every TPC.
     this.raw = 'v=0\r\n'
         + `o=- ${sessionId} 2 IN IP4 0.0.0.0\r\n`
@@ -479,6 +498,8 @@ SDP.prototype.fromJingle = function(jingle) {
     // #section-8
     const groups
         = $(jingle).find('>group[xmlns="urn:xmpp:jingle:apps:grouping:0"]');
+
+    console.log("Groups " + groups.toString());
 
     if (groups.length) {
         groups.each((idx, group) => {
@@ -499,21 +520,15 @@ SDP.prototype.fromJingle = function(jingle) {
     }
 
     this.session = this.raw;
-    jingle.find('>content').each((_, content) => {
+    $(jingle).find('>content').each((_, content) => {
         const m = this.jingle2media($(content));
 
         this.media.push(m);
     });
 
-    // reconstruct msid-semantic -- apparently not necessary
-    /*
-     var msid = SDPUtil.parseSSRC(this.raw);
-     if (msid.hasOwnProperty('mslabel')) {
-     this.session += "a=msid-semantic: WMS " + msid.mslabel + "\r\n";
-     }
-     */
 
     this.raw = this.session + this.media.join('');
+
 };
 
 // translate a jingle content element into an an SDP media part

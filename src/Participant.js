@@ -5,6 +5,7 @@ import debug from '@xmpp/debug';
 import SDP from './SDP';
 import SDPUtil from './SDPUtil';
 import {generateSsrc} from './util';
+const util = require('util');
 
 let id = 1;
 
@@ -252,6 +253,14 @@ export default class Participant extends EventEmitter {
         switch(element.attrs.action) {
             case 'session-initiate':
                 console.log(`${this} received session initiate`);
+            
+                var remoteSDP = new SDP('');
+
+                remoteSDP.fromJingle(element.toString());
+                console.log(`-------------------------------`);
+                console.log(`Remote SDP ${remoteSDP.raw}`);
+                console.log(`----------------------------------`);
+
                 setTimeout(async () => {
                     this._sendSessionAccept(element, stanza);
                 }, 10);
